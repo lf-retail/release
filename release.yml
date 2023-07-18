@@ -1,0 +1,33 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database
+       
+
+jobs:
+  app-deploy:
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy:
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
+          
