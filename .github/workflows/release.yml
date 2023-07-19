@@ -1,5 +1,5 @@
 name: release
-
+run-name: release - ${github.event.inputs.releaseNo}
 on:
   workflow_dispatch:
     inputs:
@@ -9,6 +9,11 @@ on:
       database:
         type: boolean
         description: Deploy database
+      releaseNo:
+        type: text
+        description: Version Number
+      
+      
        
 
 jobs:
