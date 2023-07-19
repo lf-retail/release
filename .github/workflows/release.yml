@@ -14,7 +14,7 @@ on:
 jobs:
   
   app-deploy:
-     environment: Dev
+     environment: DEV
      name: DEV  Deoloyment Dev
      if: ${{ github.event.inputs.app =='true' }}
      runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
         run: |
          echo " runing App deployment now "
   database-deploy:
-     environment: Dev
+     environment: DEV
      name: DEV  Deoloyment Dev
      if: ${{ github.event.inputs.database == 'true' }}
      runs-on: ubuntu-latest
