@@ -10,15 +10,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        ref: 'refs/heads/dev'
+        ref: 'refs/heads/Dev'
       
     - name: Create Release Branch
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
-        git checkout -b $RELEASE_BRANCH_NAME origin/dev
+        git checkout -b $RELEASE_BRANCH_NAME origin/Dev
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        GITHUB_TOKEN: ${{ secrets.WORKFLOW2_PAT_TOKEN_GITHUB }}
+        GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
 
   #trigger_cd_pipeline:
    # needs: create_release_branch
