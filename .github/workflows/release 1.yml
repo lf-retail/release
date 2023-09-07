@@ -30,7 +30,7 @@ jobs:
      # run: |
       #  CD_PIPELINE_WORKFLOW='workflow_dispatch'
 
-        CD_PIPELINE_INPUT='{"some_key": "some_value"}'
+       # CD_PIPELINE_INPUT='{"some_key": "some_value"}'
 
 
         #REPO_NAME=${{ github.repository }}
