@@ -20,7 +20,7 @@ jobs:
         git checkout -b $RELEASE_BRANCH_NAME origin/dev
         git push origin $RELEASE_BRANCH_NAME
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WORKFLOW2_PAT_TOKEN_GITHUB }}
 
   #trigger_cd_pipeline:
    # needs: create_release_branch
