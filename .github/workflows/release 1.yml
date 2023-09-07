@@ -2,11 +2,7 @@ name: Create Release Branch and Trigger CD Pipeline
 
 on:
   workflow_dispatch:
-    #inputs:
-     # branch_name:
-       # description: 'Name of the release branch'
-      #  required: true
-
+   
 jobs:
   create_release_branch:
     runs-on: ubuntu-latest
@@ -18,7 +14,7 @@ jobs:
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
         git checkout -b $RELEASE_BRANCH_NAME origin/dev
-        git push origin $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.WORKFLOW2_PAT_TOKEN_GITHUB }}
 
