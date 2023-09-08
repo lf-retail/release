@@ -26,14 +26,14 @@ jobs:
       - name: List commits in release branch
         id: list-commits-release
         run: |
-          git fetch origin ${{ inputs.releaseBranch }}
-          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.releaseBranch }})
-          echo "::set-output name=release_commits::$RELEASE_COMMITS"
+          git fetch origin ${{ inputs.Dev }}
+          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.Dev}})
+          echo "::set-output name=Dev_commits::$RELEASE_COMMITS"
 
       - name: Check for hotfix/bugfix branch commits in main
         run: |
           MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
-          RELEASE_COMMITS="${{ steps.list-commits-release.outputs.release_commits }}"
+          RELEASE_COMMITS="${{ steps.list-commits-Dev.outputs.Dev_commits }}"
 
           for COMMIT in $MAIN_COMMITS; do
             if [[ "$RELEASE_COMMITS" == *"$COMMIT"* ]]; then
@@ -42,12 +42,12 @@ jobs:
             fi
           done
 
-      - name: Check if dev is behind main
-        id: check-dev-behind-main
+      - name: Check if Dev is behind main
+        id: check-Dev-behind-main
         run: |
-          git fetch origin dev:dev
+          git fetch origin Dev:Dev
           git fetch origin main:main
-          DIFF_COMMITS=$(git log main..dev --oneline)
+          DIFF_COMMITS=$(git log main..Dev --oneline)
           if [[ -n "$DIFF_COMMITS" ]]; then
             echo "Error: Dev branch is behind the main branch."
             exit 1
