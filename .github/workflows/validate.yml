@@ -1,4 +1,4 @@
-name: Check Release Branch
+name: Compare Commits
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  check-release-branch:
+  compare-commits:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,27 +23,27 @@ jobs:
           MAIN_COMMITS=$(git log --format="%H" main)
           echo "::set-output name=main_commits::$MAIN_COMMITS"
 
-      - name: List commits in release branch
-        id: list-commits-release
+      - name: List commits in Dev branch
+        id: list-commits-dev
         run: |
-          git fetch origin ${{ inputs.Dev }}
-          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.Dev}})
-          echo "::set-output name=Dev_commits::$RELEASE_COMMITS"
+          git fetch origin Dev
+          DEV_COMMITS=$(git log --format="%H" Dev)
+          echo "::set-output name=dev_commits::$DEV_COMMITS"
 
       - name: Check for hotfix/bugfix branch commits in main
         run: |
           MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
-          RELEASE_COMMITS="${{ steps.list-commits-Dev.outputs.Dev_commits }}"
+          DEV_COMMITS="${{ steps.list-commits-dev.outputs.dev_commits }}"
 
           for COMMIT in $MAIN_COMMITS; do
-            if [[ "$RELEASE_COMMITS" == *"$COMMIT"* ]]; then
-              echo "Error: Commit $COMMIT from main is in the release branch."
+            if [[ "$DEV_COMMITS" == *"$COMMIT"* ]]; then
+              echo "Error: Commit $COMMIT from main is in the Dev branch."
               exit 1
             fi
           done
 
       - name: Check if Dev is behind main
-        id: check-Dev-behind-main
+        id: check-dev-behind-main
         run: |
           git fetch origin Dev:Dev
           git fetch origin main:main
