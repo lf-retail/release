@@ -1,0 +1,43 @@
+name: Compare Commits
+
+on:
+  workflow_dispatch:
+    inputs:
+      DevBranch:
+        description: 'Dev Branch'
+        required: true
+        type: string
+
+jobs:
+  compare-commits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: List commits in main branch
+        id: list-commits-main
+        run: |
+          git fetch origin main
+          MAIN_COMMITS=$(git log --format="%H" main)
+          echo "::set-output name=main_commits::$MAIN_COMMITS"
+
+      - name: List commits in Dev branch
+        id: list-commits-Dev
+        run: |
+          git fetch origin ${{ inputs.DevBranch }}
+          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.DevBranch }})
+          echo "::set-output name=release_commits::$RELEASE_COMMITS"
+
+      - name: Check for hotfix/bugfix branch commits in main
+        run: |
+          MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
+          RELEASE_COMMITS="${{ steps.list-commits-release.outputs.Dev_commits }}"
+
+          for COMMIT in $MAIN_COMMITS; do
+            if [[ "$RELEASE_COMMITS" == *"$COMMIT"* ]]; then
+              echo "Error: Commit $COMMIT from main is in the Dev branch."
+              exit 1
+            fi
+          done
