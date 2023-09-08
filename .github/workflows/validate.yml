@@ -26,7 +26,7 @@ jobs:
       - name: List commits in Dev branch
         id: list-commits-Dev
         run: |
-          git fetch origin dev:Dev
+          git fetch origin Dev:Dev
           RELEASE_COMMITS=$(git log --format="%H" Dev)
           echo "::set-output name=release_commits::$RELEASE_COMMITS"
 
