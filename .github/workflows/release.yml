@@ -1,5 +1,4 @@
 name: release
-run-name: release - ${{github.event.inputs.releaseNo}}
 on:
   workflow_dispatch:
     inputs:
@@ -14,6 +13,22 @@ on:
         description: Version Number
 
 jobs:
+
+  create_release_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'refs/heads/Dev'
+      
+    - name: Create Release Branch
+      run: |
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME origin/dev
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
   
   app-deploy-dev:
      environment: DEV
