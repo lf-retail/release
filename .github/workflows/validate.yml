@@ -1,36 +1,55 @@
-name: Compare Commits
+name: Check Main Branch
 
 on:
   workflow_dispatch:
     inputs:
-      DevBranch:
-        description: 'Dev Branch'
+      releaseBranch:
+        description: 'Release Branch'
         required: true
         type: string
 
 jobs:
-  compare-commits:
+  check-main-branch:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: List commits in main branch and Dev
+      - name: List commits in main branch
         id: list-commits-main
         run: |
           git fetch origin main
           MAIN_COMMITS=$(git log --format="%H" main)
           echo "::set-output name=main_commits::$MAIN_COMMITS"
-          git fetch origin Dev:Dev
-          RELEASE_COMMITS=$(git log --format="%H" Dev)
+
+      - name: List commits in release branch
+        id: list-commits-release
+        run: |
+          git fetch origin ${{ inputs.releaseBranch }}
+          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.releaseBranch }})
           echo "::set-output name=release_commits::$RELEASE_COMMITS"
+
+      - name: Check for hotfix/bugfix branch commits in main
+        run: |
           MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
-          RELEASE_COMMITS="${{ steps.list-commits-release.outputs.Dev_commits }}"
+          RELEASE_COMMITS="${{ steps.list-commits-release.outputs.release_commits }}"
 
           for COMMIT in $MAIN_COMMITS; do
             if [[ "$RELEASE_COMMITS" == *"$COMMIT"* ]]; then
-              echo "main has hot/bug fix code changes or dev is behind the main then pipeline should fail."
+              echo "Error: Commit $COMMIT from main is in the release branch."
               exit 1
             fi
           done
+
+      - name: Check if dev is behind main
+        id: check-dev-behind-main
+        run: |
+          git fetch origin dev:dev
+          git fetch origin main:main
+          DIFF_COMMITS=$(git log main..dev --oneline)
+          if [[ -n "$DIFF_COMMITS" ]]; then
+            echo "Error: Dev branch is behind the main branch."
+            exit 1
+          fi
+
