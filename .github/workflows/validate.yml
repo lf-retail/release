@@ -26,8 +26,8 @@ jobs:
       - name: List commits in Dev branch
         id: list-commits-Dev
         run: |
-          git fetch origin ${{ inputs.DevBranch }}
-          RELEASE_COMMITS=$(git log --format="%H" ${{ inputs.DevBranch }})
+          git fetch origin dev:Dev
+          RELEASE_COMMITS=$(git log --format="%H" Dev)
           echo "::set-output name=release_commits::$RELEASE_COMMITS"
 
       - name: Check for hotfix/bugfix branch commits in main
