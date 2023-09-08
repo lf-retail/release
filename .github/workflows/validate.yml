@@ -16,28 +16,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: List commits in main branch
+      - name: List commits in main branch and Dev
         id: list-commits-main
         run: |
           git fetch origin main
           MAIN_COMMITS=$(git log --format="%H" main)
           echo "::set-output name=main_commits::$MAIN_COMMITS"
-
-      - name: List commits in Dev branch
-        id: list-commits-Dev
-        run: |
           git fetch origin Dev:Dev
           RELEASE_COMMITS=$(git log --format="%H" Dev)
           echo "::set-output name=release_commits::$RELEASE_COMMITS"
-
-      - name: Check for hotfix/bugfix branch commits in main
-        run: |
           MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
           RELEASE_COMMITS="${{ steps.list-commits-release.outputs.Dev_commits }}"
 
           for COMMIT in $MAIN_COMMITS; do
             if [[ "$RELEASE_COMMITS" == *"$COMMIT"* ]]; then
-              echo "Error: Commit $COMMIT from main is in the Dev branch."
+              echo "main has hot/bug fix code changes or dev is behind the main then pipeline should fail."
               exit 1
             fi
           done
