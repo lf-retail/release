@@ -32,7 +32,7 @@ jobs:
 
   app-CI-dev:
      if: ${{ github.event.inputs.app =='true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yml@main
+     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
      secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
          JAVA_TOKEN: ${{ secrets.JAVA_TOKEN }}
