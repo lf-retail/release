@@ -36,13 +36,13 @@ jobs:
      secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
-  #database-CI-dev:
-   #  if: ${{ github.event.inputs.database == 'true' }}
-    # uses: lf-retail/database/.github/workflows/data-ci.yml@main
-     #secrets:
-      #    Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-       #   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        #  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
+  database-CI-dev:
+     if: ${{ github.event.inputs.database == 'true' }}
+     uses: lf-retail/database/.github/workflows/data-ci.yml@main
+     secrets:
+          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
   
   app-deploy-dev:
      environment: DEV
