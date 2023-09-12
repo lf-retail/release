@@ -31,33 +31,19 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   app-CI-dev:
-     environment: DEV
-     name: App  CI Dev
      if: ${{ github.event.inputs.app =='true' }}
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: CI App
-        uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yml@main
-        with:
+     uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yml@main
+     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
          JAVA_TOKEN: ${{ secrets.JAVA_TOKEN }}
-         
+
   database-CI-dev:
-     environment: DEV
-     name: Database  CI Dev
      if: ${{ github.event.inputs.database == 'true' }}
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: CI database
-        uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-        with:
+     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+     secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}         
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
   
   app-deploy-dev:
      environment: DEV
