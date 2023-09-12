@@ -1,9 +1,7 @@
 name: Check Main Branch for Hotfix/Bug Fix and Branch Sync
 
 on:
-  push:
-    branches:
-      - Dev
+workflow_dispatch
 
 jobs:
   check-main-branch:
