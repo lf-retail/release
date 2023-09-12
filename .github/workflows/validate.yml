@@ -1,54 +1,31 @@
-name: Compare Commits
+name: Check Main Branch for Hotfix/Bug Fix and Branch Sync
 
 on:
-  workflow_dispatch:
-    inputs:
-      releaseBranch:
-        description: 'Release Branch'
-        required: true
-        type: string
+  push:
+    branches:
+      - Dev
 
 jobs:
-  compare-commits:
+  check-main-branch:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: List commits in main branch
-        id: list-commits-main
-        run: |
-          git fetch origin main
-          MAIN_COMMITS=$(git log --format="%H" main)
-          echo "::set-output name=main_commits::$MAIN_COMMITS"
-
-      - name: List commits in Dev branch
-        id: list-commits-dev
-        run: |
-          git fetch origin Dev
-          DEV_COMMITS=$(git log --format="%H" Dev)
-          echo "::set-output name=dev_commits::$DEV_COMMITS"
-
-      - name: Check for hotfix/bugfix branch commits in main
-        run: |
-          MAIN_COMMITS="${{ steps.list-commits-main.outputs.main_commits }}"
-          DEV_COMMITS="${{ steps.list-commits-dev.outputs.dev_commits }}"
-
-          for COMMIT in $MAIN_COMMITS; do
-            if [[ "$DEV_COMMITS" == *"$COMMIT"* ]]; then
-              echo "Error: Commit $COMMIT from main is in the Dev branch."
-              exit 1
-            fi
-          done
-
-      - name: Check if Dev is behind main
-        id: check-dev-behind-main
-        run: |
-          git fetch origin Dev:Dev
-          git fetch origin main:main
-          DIFF_COMMITS=$(git log main..Dev --oneline)
-          if [[ -n "$DIFF_COMMITS" ]]; then
-            echo "Error: Dev branch is behind the main branch."
-            exit 1
-          fi
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      
+    - name: Check for Hotfix/Bug Fix in Main Branch
+      run: |
+        git fetch origin main
+        CHANGED_COMMITS=$(git log --oneline origin/main..Dev | grep -iE 'hotfix|bug fix' || true)
+        if [ -n "$CHANGED_COMMITS" ]; then
+          echo "Commits with 'hotfix' or 'bug fix' keywords found in main branch."
+          exit 1
+        fi
+    - name: Check Branch Sync
+      run: |
+        git fetch origin main
+        BEHIND_COMMITS=$(git rev-list --count Dev..origin/main)
+        if [ "$BEHIND_COMMITS" -gt 0 ]; then
+          echo "Dev branch is $BEHIND_COMMITS commits behind the main branch."
+          exit 1
+        fi
