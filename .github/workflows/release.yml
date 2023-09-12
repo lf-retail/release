@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v2
       - name: CI App
         uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yml@main
-        env:
+        with:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
          JAVA_TOKEN: ${{ secrets.JAVA_TOKEN }}
          
@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v2
       - name: CI database
         uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-        env:
+        with:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}         
