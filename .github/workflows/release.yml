@@ -32,13 +32,13 @@ jobs:
 
   app-CI-dev:
      if: ${{ github.event.inputs.app =='true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+     uses: lf-retail/app-service/.github/workflows/java-maven-sonar-ci.yml@main
      secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+     uses: lf-retail/database/.github/workflows/databaseci.yml@main
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
