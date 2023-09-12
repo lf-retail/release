@@ -8,6 +8,9 @@ on:
       database:
         type: boolean
         description: Deploy database
+      repository:
+        type: string
+        description: Repository to checkout
       releaseNo:
         type: text
         description: Version Number
@@ -35,6 +38,17 @@ jobs:
      uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
      secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+  
+  checkout-repo:
+     name: Checkout Repository
+     runs-on: ubuntu-latest
+     steps:
+     - name: Checkout from Repo
+       uses: actions/checkout@v2
+       with:
+         repository: ${{ github.event.inputs.repository }}
+         ref: main
+      
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
