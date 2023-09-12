@@ -1,7 +1,7 @@
 name: Check Main Branch for Hotfix/Bug Fix and Branch Sync
 
 on:
-workflow_dispatch
+  workflow_dispatch
 
 jobs:
   check-main-branch:
