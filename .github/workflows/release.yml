@@ -15,9 +15,6 @@ on:
  
 
 jobs:
-
- 
-
   create_release_branch:
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +42,7 @@ jobs:
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+     uses: lf-retail/database/.github/workflows/data-ci.yml@main
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
