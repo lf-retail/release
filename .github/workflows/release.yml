@@ -38,6 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY: ${{ github.event.inputs.repository }}
+    steps:
+      - name: Set up environment variables
+        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV
 
 
   app-CI-dev:
