@@ -36,7 +36,7 @@ jobs:
         
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+    uses: lf-retai/app-service/.github/workflows/app-CI-java-sonar.yml@main
     #with:
       #repository: ${{ github.event.input.repository }}
     secrets:
