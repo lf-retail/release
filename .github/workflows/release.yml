@@ -11,7 +11,10 @@ on:
         description: Deploy database
       repository:
         type: string
+        required: true
+        default: 'true'
         description: Application
+        
       releaseNo:
         type: text
         description: Version Number
