@@ -35,20 +35,13 @@ jobs:
 
   app-CI-dev:
      if: ${{ github.event.inputs.app =='true' }}
-
-     runs-on: ubuntu-latest
-     steps:
-      - name: Set up environment variables
-        run: |
-           echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-          
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Run referenced workflow
-        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-        env:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+     with:
+        repository: ${{ github.event.inputs.repository }}
+        ref: main
+     secrets:
+       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+       
   
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
