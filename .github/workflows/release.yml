@@ -8,16 +8,12 @@ on:
       database:
         type: boolean
         description: Deploy database
-      repository:
-        type: string
-        description: Application
       releaseNo:
         type: text
         description: Version Number
 
- 
-
 jobs:
+
   create_release_branch:
     runs-on: ubuntu-latest
     steps:
@@ -25,36 +21,142 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: 'refs/heads/Dev'
-
+      
     - name: Create Release Branch
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
         git checkout -b $RELEASE_BRANCH_NAME Release
         git push --set-upstream origin Release
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}     
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   app-CI-dev:
-    if: ${{ github.event.inputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run referenced workflow
-        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-        env:
-          WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-
+     if: ${{ github.event.inputs.app =='true' }}
+     uses: lf-retail/app-service/.github/workflows/app CI java sonar.yml@main
+     secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+     uses: lf-retail/database/.github/workflows/data-ci.yml@main
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
+  
+  app-deploy-dev:
+     environment: DEV
+     name: App  Deoloyment Dev
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-dev:
+     environment: DEV
+     name: Database  Deoloyment Dev
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
+  app-deploy-uat:
+     environment: UAT
+     name: App  Deoloyment UAT
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-dev
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-uat:
+     environment: UAT
+     name: Database  Deoloyment UAT
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-dev
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
+  app-deploy-PROD:
+     environment: PROD
+     name: App  Deoloyment PROD
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-uat
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-PROD:
+     environment: PROD
+     name: Database  Deoloyment PROD
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-uat
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy databasname: release
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database
+      releaseNo:
+        type: text
+        description: Version Number
 
+jobs:
 
+  create_release_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'refs/heads/Dev'
+      
+    - name: Create Release Branch
+      run: |
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME Release
+        git push --set-upstream origin Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+  app-CI-dev:
+     if: ${{ github.event.inputs.app =='true' }}
+     uses: lf-retail/app-service/.github/workflows/app CI java sonar.yml@main
+     secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+
+  database-CI-dev:
+     if: ${{ github.event.inputs.database == 'true' }}
+     uses: lf-retail/database/.github/workflows/data-ci.yml@main
+     secrets:
+          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
+  
   app-deploy-dev:
      environment: DEV
      name: App  Deoloyment Dev
@@ -125,3 +227,15 @@ jobs:
       - name: deploy database
         run: |
          echo " runing database deployment now "
+        run: |
+         echo " runing database deployment now "
+
+  # Checkout another repository
+  checkout-another-repo:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout another repo
+      uses: actions/checkout@v2
+      with:
+        repository: owner/another-repo  # Replace with the actual owner and repo name
+        ref: main  # Replace with the branch or tag you want to checkout from the other repo
