@@ -10,7 +10,7 @@ on:
         description: Deploy database
       repository:
         type: string
-        description: Repository to checkout
+        description: Application
       releaseNo:
         type: text
         description: Version Number
@@ -35,8 +35,17 @@ jobs:
 
   app-CI-dev:
      if: ${{ github.event.inputs.app =='true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-     secrets:
+
+     runs-on: ubuntu-latest
+     steps:
+      - name: Set up environment variables
+        run: |
+          echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run referenced workflow
+        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+        env:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
   
   database-CI-dev:
