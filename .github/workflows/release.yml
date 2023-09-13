@@ -42,7 +42,7 @@ jobs:
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
-     uses: lf-retail/database/.github/workflows/data-ci.yml@main
+     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
