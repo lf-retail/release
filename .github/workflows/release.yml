@@ -28,7 +28,7 @@ jobs:
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
         git checkout -b $RELEASE_BRANCH_NAME release
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
+        git push --set-upstream origin release
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         
