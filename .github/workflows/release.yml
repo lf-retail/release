@@ -32,24 +32,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         
-  EnvSetup:
-    if: ${{ github.event.inputs.app == 'true' }}
-    name: Setup Dynamic Environment Variables
-    runs-on: ubuntu-latest
-    outputs:
-      repository: ${{ steps.set-output-defaults.outputs.repository }}
-    steps:
-      - name: set outputs with default values
-        id: set-output-defaults
-        run: |    
-          echo "::set-output name=repository::${{ github.event.inputs.repository || 'true' }}"
-          
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    needs: EnvSetup
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    with:
-      repository: ${{needs.EnvSetup.outputs.repository}}
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
     
