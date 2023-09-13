@@ -45,7 +45,7 @@ jobs:
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == true }}
-    needs: set-environment
+    #needs: set-environment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
