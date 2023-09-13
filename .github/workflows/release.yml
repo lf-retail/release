@@ -34,13 +34,17 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   app-CI-dev:
-     if: ${{ github.event.inputs.app =='true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-     with:
-        repository: ${{ github.event.inputs.repository }}
-        ref: main
-     secrets:
-       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+    if: ${{ github.event.inputs.app == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY: ${{ github.event.inputs.repository }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run referenced workflow
+        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+        env:
+          WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
        
   
   database-CI-dev:
@@ -49,7 +53,8 @@ jobs:
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+          
   
   app-deploy-dev:
      environment: DEV
