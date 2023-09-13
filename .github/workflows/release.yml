@@ -41,8 +41,10 @@ jobs:
       - name: Set up environment variables
         run: |
           echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
-      - name: Checkout code
-        uses: actions/checkout@v2
+          
+      #- name: Checkout code
+       # uses: actions/checkout@v2
+        
       - name: Run referenced workflow
         uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
         env:
