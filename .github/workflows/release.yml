@@ -40,7 +40,7 @@ jobs:
       - name: set outputs with default values
         id: set-output-defaults
         run: |    
-          echo "::set-output name=repository::${{ github.event.inputs.repository || 'true' }}"
+          echo "::set-output name=repository::${{ github.event.inputs.repository }}"
   app-CI-dev:
     if: ${{ github.event.inputs.app =='true' }}
     needs: [EnvSetup]
