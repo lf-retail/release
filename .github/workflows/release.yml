@@ -28,7 +28,7 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.releaseNo }}
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
         git checkout -b $RELEASE_BRANCH_NAME Release
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
@@ -38,9 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY: ${{ github.event.inputs.repository }}
-    steps:
-      - name: Set up environment variables
-        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV
+
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == true }}
