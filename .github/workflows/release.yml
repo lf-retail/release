@@ -38,13 +38,8 @@ jobs:
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run referenced workflow
-        uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
-        env:
+    uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
+    secrets:
           WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
 
