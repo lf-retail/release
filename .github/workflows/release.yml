@@ -28,30 +28,38 @@ jobs:
 
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
-        git checkout -b $RELEASE_BRANCH_NAME release
-        git push --set-upstream origin release
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME Release
+        git push --set-upstream origin Release
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+  set-environment:
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY: ${{ github.event.inputs.repository }}
+    steps:
+      - name: Set up environment variables
+        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV      
 
  
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
-    with:
-     repository: ${{ github.event.inputs.repository }}
-     ref: main 
-    secrets:
+    needs: set-environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run referenced workflow
+        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+        env:
           WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
 
   database-CI-dev:
      if: ${{ github.event.inputs.database == 'true' }}
      uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-     with:
-       repository: ${{ github.event.inputs.repository }}
-       ref: main     
      secrets:
           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -128,4 +136,3 @@ jobs:
       - name: deploy database
         run: |
          echo " runing database deployment now "
-
