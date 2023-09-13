@@ -44,8 +44,7 @@ jobs:
       - name: set outputs with default values
         id: set-output-defaults
         run: |    
-         # # If workflow_dispatch, use inputs (left), if other trigger, use default env (right)
-          repository=${{ github.event.inputs.repository || 'true' }} >> $GITHUB_OUTPUT
+          echo "::set-output name=repository::${{ github.event.inputs.repository || 'default-value' }}"
           
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
