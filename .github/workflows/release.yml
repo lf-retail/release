@@ -12,7 +12,7 @@ on:
       repository:
         type: string
         required: true
-        default: 'true'
+        default: lf-retail/app-service
         description: Application
         
       releaseNo:
