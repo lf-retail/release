@@ -55,7 +55,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run referenced workflow
-        uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml
+        uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
         env:
           WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
