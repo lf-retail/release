@@ -1,29 +1,15 @@
-[20:19] Shanmuganathan Murugesan
-
 name: release
-
 on:
-
   workflow_dispatch:
-
     inputs:
-
       app:
-
         type: boolean
-
         description: Deploy App
-
       database:
-
         type: boolean
-
         description: Deploy database
-
       releaseNo:
-
         type: text
-
         description: Version Number
 
  
