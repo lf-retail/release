@@ -28,8 +28,8 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.releaseNo }}
-        git checkout -b $RELEASE_BRANCH_NAME Release
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
+        git checkout -b $RELEASE_BRANCH_NAME release
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -44,6 +44,7 @@ jobs:
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == true }}
+    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     needs: set-environment
     runs-on: ubuntu-latest
     steps:
