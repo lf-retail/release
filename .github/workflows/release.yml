@@ -40,7 +40,7 @@ jobs:
      steps:
       - name: Set up environment variables
         run: |
-           REPOSITORY=${{ github.event.inputs.repository }} >> $GITHUB_ENV
+           echo "REPOSITORY=${{ github.event.inputs.repository }}" >> $GITHUB_ENV
           
       #- name: Checkout code
        # uses: actions/checkout@v2
