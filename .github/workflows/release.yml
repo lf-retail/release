@@ -37,7 +37,7 @@ jobs:
      if: ${{ github.event.inputs.app =='true' }}
      uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
      with:
-        repository: ${{ github.event.inputs.repository }}
+        repository: ${{ github.event.inputs.lf-retail }}
         ref: main
      secrets:
        Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
