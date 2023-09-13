@@ -34,7 +34,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         
   set-environment:
-    if: ${{ github.event.inputs.app == 'true' }}
     runs-on: ubuntu-latest
     env:
       REPOSITORY: ${{ github.event.inputs.repository }}
