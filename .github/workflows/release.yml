@@ -1,4 +1,4 @@
-name: Deployment
+name: release
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.releaseNo }}
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
         git checkout -b $RELEASE_BRANCH_NAME Release
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
@@ -44,7 +44,7 @@ jobs:
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == true }}
-    needs: set-environment
+    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
 
   database-CI-dev:
     if: ${{ github.event.inputs.database == true }}
-    uses: ./.github/workflows/java-maven-sonar-ci.yml  # Reference the reusable workflow file from your repository
+    uses: lf-common-repo/database/.github/workflows/java-maven-sonar-ci.yml  
 
   app-deploy-dev:
     name: App Deployment Dev
