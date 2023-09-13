@@ -9,12 +9,7 @@ on:
       database:
         type: boolean
         description: Deploy database
-      repository:
-        type: string
-        required: true
-        default: lf-retail/app-service
-        description: Application
-        
+           
       releaseNo:
         type: text
         description: Version Number
