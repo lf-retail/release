@@ -35,6 +35,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         
   EnvSetup:
+    if: ${{ github.event.inputs.app == 'true' }}
     name: Setup Dynamic Environment Variables
     runs-on: ubuntu-latest
     outputs:
@@ -43,7 +44,7 @@ jobs:
       - name: set outputs with default values
         id: set-output-defaults
         run: |    
-          echo "::set-output name=repository::${{ github.event.inputs.repository || 'default-value' }}"
+          echo "::set-output-defaults name=repository::${{ github.event.inputs.repository || 'true' }}"
           
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
