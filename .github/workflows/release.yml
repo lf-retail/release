@@ -1,5 +1,4 @@
 name: release
-
 on:
   workflow_dispatch:
     inputs:
@@ -9,14 +8,18 @@ on:
       database:
         type: boolean
         description: Deploy database
-      #repository:
-        #type: string
-        #required: true
+      repository:
+        type: string
+        description: Application
       releaseNo:
         type: text
         description: Version Number
 
+ 
+
 jobs:
+
+ 
 
   create_release_branch:
     runs-on: ubuntu-latest
@@ -25,97 +28,116 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: 'refs/heads/Dev'
-      
+
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
-        git checkout -b $RELEASE_BRANCH_NAME release
-        git push --set-upstream origin release
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME Release
+        git push --set-upstream origin Release
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        
+
+  set-environment:
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY: ${{ github.event.inputs.repository }}
+    steps:
+      - name: Set up environment variables
+        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV      
+
+ 
+
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
-    secrets:
-      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-    
+    needs: set-environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run referenced workflow
+        uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml
+        env:
+          WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+
+
   database-CI-dev:
-    if: ${{ github.event.inputs.database == true }}
-    uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-    secrets:
-      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+     if: ${{ github.event.inputs.database == 'true' }}
+     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+     secrets:
+          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+
 
   app-deploy-dev:
-    name: App Deployment Dev
-    if: ${{ github.event.inputs.app == true }}
-    runs-on: ubuntu-latest
-    needs: app-CI-dev
-    steps:
-      - name: Checkout code
+     environment: DEV
+     name: App  Deoloyment Dev
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy App to Dev
+      - name: deploy App
         run: |
-          echo "Running App deployment to Dev now."
-
+         echo " runing App deployment now "
   database-deploy-dev:
-    name: Database Deployment Dev
-    if: ${{ github.event.inputs.database == true }}
-    runs-on: ubuntu-latest
-    needs: database-CI-dev
-    steps:
-      - name: Checkout code
+     environment: DEV
+     name: Database  Deoloyment Dev
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy Database to Dev
+      - name: deploy database
         run: |
-          echo "Running database deployment to Dev now."
-
+         echo " runing database deployment now "
   app-deploy-uat:
-    name: App Deployment UAT
-    if: ${{ github.event.inputs.app == true }}
-    runs-on: ubuntu-latest
-    needs: app-deploy-dev
-    steps:
-      - name: Checkout code
+     environment: UAT
+     name: App  Deoloyment UAT
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-dev
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy App to UAT
+      - name: deploy App
         run: |
-          echo "Running App deployment to UAT now."
-
+         echo " runing App deployment now "
   database-deploy-uat:
-    name: Database Deployment UAT
-    if: ${{ github.event.inputs.database == true }}
-    runs-on: ubuntu-latest
-    needs: database-deploy-dev
-    steps:
-      - name: Checkout code
+     environment: UAT
+     name: Database  Deoloyment UAT
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-dev
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy Database to UAT
+      - name: deploy database
         run: |
-          echo "Running database deployment to UAT now."
-
+         echo " runing database deployment now "
   app-deploy-PROD:
-    name: App Deployment PROD
-    if: ${{ github.event.inputs.app == true }}
-    runs-on: ubuntu-latest
-    needs: app-deploy-uat
-    steps:
-      - name: Checkout code
+     environment: PROD
+     name: App  Deoloyment PROD
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-uat
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy App to PROD
+      - name: deploy App
         run: |
-          echo "Running App deployment to PROD now."
-
+         echo " runing App deployment now "
   database-deploy-PROD:
-    name: Database Deployment PROD
-    if: ${{ github.event.inputs.database == true }}
-    runs-on: ubuntu-latest
-    needs: database-deploy-uat
-    steps:
-      - name: Checkout code
+     environment: PROD
+     name: Database  Deoloyment PROD
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-uat
+     steps:
+      - name: Check out code
         uses: actions/checkout@v2
-      - name: Deploy Database to PROD
+      - name: deploy database
         run: |
-          echo "Running database deployment to PROD now."
+         echo " runing database deployment now "
+
+has context menu
