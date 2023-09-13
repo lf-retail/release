@@ -32,21 +32,10 @@ jobs:
         git checkout -b $RELEASE_BRANCH_NAME Release
         git push --set-upstream origin Release
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-  set-environment:
-    runs-on: ubuntu-latest
-    env:
-      REPOSITORY: ${{ github.event.inputs.repository }}
-    steps:
-      - name: Set up environment variables
-        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV      
-
- 
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}     
 
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
-    needs: set-environment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
