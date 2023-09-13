@@ -37,8 +37,6 @@ jobs:
   app-CI-dev:
     if: ${{ github.event.inputs.app == 'true' }}
     uses: lf-retail/app-service/.github/workflows/app-CI-java-sonar.yml@main
-    with:
-      repository: ${{ github.event.input.repository }}
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
     
