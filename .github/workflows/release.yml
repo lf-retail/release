@@ -33,24 +33,29 @@ jobs:
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-  set-environment:
+        
+  EnvSetup:
+    if: ${{ github.event.inputs.app == 'true' }}
+    name: Setup Dynamic Environment Variables
     runs-on: ubuntu-latest
-    env:
-      REPOSITORY: ${{ github.event.inputs.repository }}
+    outputs:
+      repository: ${{ steps.set-output-defaults.outputs.repository }}
     steps:
-      - name: Set up environment variables
-        run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV
-
+      - name: set outputs with default values
+        id: set-output-defaults
+        run: |    
+          # If workflow_dispatch, use inputs (left), if other trigger, use default env (right)
+          echo "::set-output name=repository::${{ github.event.inputs.repository || 'true' }}"
+          
   app-CI-dev:
-    if: ${{ github.event.inputs.app == true }}
+    if: ${{ github.event.inputs.app == 'true' }}
+    needs: EnvSetup
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    needs: set-environment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+    with:
+      repository: ${{needs.EnvSetup.outputs.repository}}
+    secrets:
+      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+    
   database-CI-dev:
     if: ${{ github.event.inputs.database == true }}
     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
