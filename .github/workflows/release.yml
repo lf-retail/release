@@ -51,7 +51,7 @@ jobs:
     needs: EnvSetup
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
-      repository: ${{needs.EnvSetup.inputs.repository}}
+      repository: ${{needs.EnvSetup.outputs.repository}}
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
     
