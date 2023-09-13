@@ -1,4 +1,4 @@
-name: release
+name: Deployment
 
 on:
   workflow_dispatch:
@@ -28,35 +28,31 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME Release
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        REPOSITORY: ${{ github.event.inputs.repository }}
 
-
-
-  app-CI-dev:
-    if: ${{ github.event.inputs.app == true }}
+  set-environment:
     runs-on: ubuntu-latest
+    env:
+      REPOSITORY: ${{ github.event.inputs.repository }}
     steps:
       - name: Set up environment variables
         run: echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV
+
+  app-CI-dev:
+    if: ${{ github.event.inputs.app == true }}
+    needs: set-environment
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Run referenced workflow
-        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-        env:
-          WORKFLOW2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
   database-CI-dev:
     if: ${{ github.event.inputs.database == true }}
-    uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-    secrets:
-      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    uses: ./.github/workflows/java-maven-sonar-ci.yml  # Reference the reusable workflow file from your repository
 
   app-deploy-dev:
     name: App Deployment Dev
