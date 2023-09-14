@@ -37,8 +37,9 @@ jobs:
         git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        GITHUB_TOKEN: $GITHUB_TOKEN
+        token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
+        
 
   app-CI-dev:
     if: ${{ github.event.inputs.app =='true' }}
