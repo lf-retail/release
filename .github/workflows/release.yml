@@ -24,8 +24,8 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
-        git checkout -b $RELEASE_BRANCH_NAME Release
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin Release
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
       repository: "lf-retail/app-service"
-      ref: main
+      branch: $RELEASE_BRANCH_NAME
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
 
