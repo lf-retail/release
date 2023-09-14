@@ -23,6 +23,8 @@ jobs:
       with:
         ref: 'refs/heads/Dev'
         repository: "lf-retail/app-service"
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       
     - name: Create Release Branch
       run: |
