@@ -27,13 +27,15 @@ jobs:
         repository-projects: write
     
     steps:
-    - name: CI for App
+    - name: Checkout App Code
       uses: actions/checkout@v3
       with:
         repository: "lf-retail/app-service"
         ref: 'refs/heads/Dev'
         token: $GITHUB_TOKEN
-    - run: |
+        
+    - name : Create Release Branch 
+      run: |
         RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin $RELEASE_BRANCH_NAME
