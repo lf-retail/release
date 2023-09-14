@@ -12,6 +12,10 @@ on:
         type: string
         description: Version Number
 
+env:
+  Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
+  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
 jobs:
 
   create_release_branch:
@@ -23,7 +27,7 @@ jobs:
         repository: "lf-retail/app-service"
         ref: 'refs/heads/Dev'
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
       
     - name: Create Release Branch
       run: |
