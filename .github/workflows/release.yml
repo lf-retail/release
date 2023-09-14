@@ -32,7 +32,6 @@ jobs:
       with:
         repository: lf-retail/app-service
         ref: 'refs/heads/Dev' 
-        #Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
         token: ${{ secrets.PAT_TOKEN }}
     - name : Create Release Branch 
       run: |
