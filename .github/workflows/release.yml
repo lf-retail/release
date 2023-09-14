@@ -9,7 +9,7 @@ on:
         type: boolean
         description: Deploy database
       releaseNo:
-        type: text
+        type: string
         description: Version Number
 
 jobs:
@@ -24,9 +24,9 @@ jobs:
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=r-${{ github.event.inputs.releaseNo }}
-        git checkout -b release $RELEASE_BRANCH_NAME
-        git push --set-upstream origin Release
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
