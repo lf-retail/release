@@ -15,7 +15,7 @@ on:
 env:
   Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-  RELEASE_BRANCH_NAME: ''
+  #RELEASE_BRANCH_NAME: ''
 
 jobs:
 
