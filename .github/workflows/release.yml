@@ -19,8 +19,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      
       with:
         ref: 'refs/heads/Dev'
+        repository: "lf-retail/app-service"
       
     - name: Create Release Branch
       run: |
