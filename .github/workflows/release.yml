@@ -46,9 +46,9 @@ jobs:
     if: ${{ github.event.inputs.app =='true' }}
     needs: create_release_branch
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    #with:
-     # repository: "lf-retail/app-service"
-      #branch: $RELEASE_BRANCH_NAME
+    with:
+      repository: "lf-retail/app-service"
+      branch: $RELEASE_BRANCH_NAME
     secrets:
       token: $GITHUB_TOKEN
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB        
