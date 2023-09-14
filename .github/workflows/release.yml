@@ -15,6 +15,7 @@ on:
 env:
   Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+  RELEASE_BRANCH_NAME: ''
 
 jobs:
 
@@ -26,8 +27,6 @@ jobs:
       with:
         repository: "lf-retail/app-service"
         ref: 'refs/heads/Dev'
-      env:
-          Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
       
     - name: Create Release Branch
       run: |
@@ -39,10 +38,11 @@ jobs:
 
   app-CI-dev:
     if: ${{ github.event.inputs.app =='true' }}
+    needs: create_release_branch
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
       repository: "lf-retail/app-service"
-      branch: $RELEASE_BRANCH_NAME
+      branch: ${{ env.RELEASE_BRANCH_NAME }}
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
