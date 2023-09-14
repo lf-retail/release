@@ -27,9 +27,7 @@ jobs:
       with:
         repository: "lf-retail/app-service"
         ref: 'refs/heads/Dev'
-      
-    - name: Create Release Branch
-      run: |
+    - run: |
         RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin $RELEASE_BRANCH_NAME
