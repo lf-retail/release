@@ -43,7 +43,7 @@ jobs:
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
       repository: "lf-retail/app-service"
-      branch: ${{ env.RELEASE_BRANCH_NAME }}
+      branch: $RELEASE_BRANCH_NAME
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
