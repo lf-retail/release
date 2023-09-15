@@ -30,7 +30,7 @@ jobs:
     - name: Checkout App Code
       uses: actions/checkout@v3
       with:
-        repository: lf-retail/app-service
+        repoName: lf-retail/app-service
         ref: 'refs/heads/Dev' 
         token: ${{ secrets.PAT_TOKEN }}
     - name : Create Release Branch 
