@@ -30,7 +30,7 @@ jobs:
     - name: Checkout App Code
       uses: actions/checkout@v3
       with:
-        repoName: lf-retail/app-service
+        repository: lf-retail/app-service
         ref: 'refs/heads/Dev' 
         token: ${{ secrets.PAT_TOKEN }}
     - name : Create Release Branch 
@@ -47,8 +47,8 @@ jobs:
     needs: create_release_branch
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
-      repository: "lf-retail/app-service"
-      branch: $RELEASE_BRANCH_NAME
+      repoName: "lf-retail/app-service"
+      branchName: $RELEASE_BRANCH_NAME
     secrets:
       token: $GITHUB_TOKEN
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB        
