@@ -67,6 +67,76 @@ jobs:
       token: $GITHUB_TOKEN
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
 
+  app-deploy-dev:
+     environment: DEV
+     name: App  Deoloyment Dev
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-dev:
+     environment: DEV
+     name: Database  Deoloyment Dev
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
+  app-deploy-uat:
+     environment: UAT
+     name: App  Deoloyment UAT
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-dev
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-uat:
+     environment: UAT
+     name: Database  Deoloyment UAT
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-dev
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
+  app-deploy-PROD:
+     environment: PROD
+     name: App  Deoloyment PROD
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     needs: app-deploy-uat
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "
+  database-deploy-PROD:
+     environment: PROD
+     name: Database  Deoloyment PROD
+     if: ${{ github.event.inputs.database == 'true' }}
+     runs-on: ubuntu-latest
+     needs: database-deploy-uat
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
       
         
 
