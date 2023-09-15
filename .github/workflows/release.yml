@@ -1,4 +1,4 @@
-name: release - ${{ github.event.inputs.releaseNo }}
+name: release
 on:
   workflow_dispatch:
     inputs:
