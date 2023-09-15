@@ -52,7 +52,22 @@ jobs:
       branchName: $RELEASE_BRANCH_NAME
     secrets:
       token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB        
+      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
+  
+  database-CI-dev:
+    if: ${{ github.event.inputs.database == 'true' }}
+    needs: create_release_branch
+    uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+    with:
+      repoName: "lf-retail/app-service"
+      branchName: $RELEASE_BRANCH_NAME
+    secrets:
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
+      token: $GITHUB_TOKEN
+      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
+
+      
         
 
  
