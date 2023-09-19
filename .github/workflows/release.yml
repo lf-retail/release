@@ -44,51 +44,13 @@ jobs:
       env:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
-
-  app-CI-dev:
-    
-    needs: CI-BUILD-FOR-APP
-    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    with:
-      repoName: "lf-retail/app-service"
-      branchName: $RELEASE_BRANCH_NAME
-    secrets:
-      token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
-
-  CI-BUILD-FOR-DB:
-    if: ${{ github.event.inputs.database == 'true' }}
-    name: DB CI DEV
-    runs-on: ubuntu-latest
-    permissions:
-        pull-requests: write
-        issues: write
-        repository-projects: write
-    
-    steps:
-    - name: Checkout App Code
-      uses: actions/checkout@v3
+    - name: call-app-CI-reusable    
+      uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
       with:
-        repository: lf-retail/app-service
-        ref: 'refs/heads/Dev' 
-        token: ${{ secrets.PAT_TOKEN }}
-    - name : Create Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
+        repoName: "lf-retail/app-service"
+        branchName: $RELEASE_BRANCH_NAME
       env:
         token: $GITHUB_TOKEN
-        Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB      
+        Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
+
   
-  database-CI-dev:
-    needs: CI-BUILD-FOR-DB
-    uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-    with:
-      repoName: "lf-retail/app-service"
-      branchName: $RELEASE_BRANCH_NAME
-    secrets:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
-      token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
