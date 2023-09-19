@@ -120,7 +120,7 @@ jobs:
     - name: Checkout App Code
       uses: actions/checkout@v3
       with:
-        repository: lf-retail/app-service
+        repository: lf-retail/database
         ref: 'refs/heads/Dev' 
         token: ${{ secrets.PAT_TOKEN }}
     - name : Create Database Release Branch 
@@ -137,7 +137,7 @@ jobs:
     needs: Create-Database-CI
     uses: lf-common-repo/shared-workflow/.github/workflows/database-ci.yml@main
     with:
-      repoName: "lf-retail/app-service"
+      repoName: "lf-retail/database"
       branchName: $RELEASE_BRANCH_NAME
     secrets:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
