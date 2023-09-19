@@ -56,6 +56,19 @@ jobs:
       token: $GITHUB_TOKEN
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
+  app-deploy-dev:
+     needs: create-app-ci
+     environment: DEV
+     name: App Deployment DEV
+     if: ${{ github.event.inputs.app =='true' }}
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "      
+      
   create-database-ci:
     if: ${{ github.event.inputs.database == 'true' }}
     environment: Dev
@@ -93,4 +106,17 @@ jobs:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
       token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
+      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
+
+
+  database-deploy-dev:
+     needs: database-CI-dev
+     environment: DEV
+     name: database Deployment DEV
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "
