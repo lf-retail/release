@@ -20,7 +20,7 @@ env:
 
 jobs:
 
-  create-app-ci:
+  Create-App-CI:
     if: ${{ github.event.inputs.app =='true' }}
     environment: DEV
     name: App-CI
@@ -37,7 +37,7 @@ jobs:
         repository: lf-retail/app-service
         ref: 'refs/heads/Dev' 
         token: ${{ secrets.PAT_TOKEN }}
-    - name : Create Release Branch 
+    - name : Create Application Release Branch 
       run: |
         RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME
@@ -46,9 +46,9 @@ jobs:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
-  app-CI:
+  App-CI:
     name: App-ci
-    needs: create-app-ci
+    needs: Create-App-CI
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
       repoName: "lf-retail/app-service"
@@ -57,8 +57,8 @@ jobs:
       token: $GITHUB_TOKEN
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
-  app-deploy-dev:
-     needs: app-CI
+  App-Deploy-Dev:
+     needs: App-CI
      environment: DEV
      name: App Deployment DEV
      runs-on: ubuntu-latest
@@ -69,8 +69,8 @@ jobs:
         run: |
          echo " runing App deployment now "      
 
-  app-deploy-UAT:
-     needs: app-deploy-dev
+  App-Deploy-UAT:
+     needs: App-Deploy-Dev
      environment: UAT
      name: App Deployment UAT
      runs-on: ubuntu-latest
@@ -81,8 +81,8 @@ jobs:
         run: |
          echo " runing App deployment now "    
 
-  app-deploy-PROD:
-     needs: app-deploy-UAT
+  App-Deploy-PROD:
+     needs: App-Deploy-UAT
      environment: PROD
      name: App Deployment PROD
      runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
          echo " runing App deployment now "  
 
   app-deploy-DR:
-     needs: app-deploy-PROD
+     needs: App-Deploy-PROD
      environment: DR
      name: App Deployment DR
      runs-on: ubuntu-latest
@@ -105,10 +105,11 @@ jobs:
         run: |
          echo " runing App deployment now "           
       
-  create-database-ci:
+  
+  Create-Database-CI:
     if: ${{ github.event.inputs.database == 'true' }}
     environment: Dev
-    name: Database CI DEV
+    name: Database-CI
     runs-on: ubuntu-latest
     permissions:
         pull-requests: write
@@ -122,7 +123,7 @@ jobs:
         repository: lf-retail/app-service
         ref: 'refs/heads/Dev' 
         token: ${{ secrets.PAT_TOKEN }}
-    - name : Create Release Branch 
+    - name : Create Database Release Branch 
       run: |
         RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME
@@ -131,10 +132,10 @@ jobs:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB      
   
-  database-CI-dev:
+  Database-ci:
     
-    needs: create-database-ci
-    uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+    needs: Create-Database-CI
+    uses: lf-common-repo/shared-workflow/.github/workflows/database-ci.yml@main
     with:
       repoName: "lf-retail/app-service"
       branchName: $RELEASE_BRANCH_NAME
@@ -145,10 +146,10 @@ jobs:
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
 
 
-  database-deploy-dev:
-     needs: database-CI-dev
+  Database-Deploy-DEV:
+     needs: Database-ci
      environment: DEV
-     name: database Deployment DEV
+     name: Database Deployment DEV
      runs-on: ubuntu-latest
      steps:
       - name: Check out code
@@ -156,3 +157,39 @@ jobs:
       - name: deploy database
         run: |
          echo " runing database deployment now "
+
+  Database-Deploy-UAT:
+     needs: Database-Deploy-DEV
+     environment: UAT
+     name: Database Deployment UAT
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "    
+
+  Database-Deploy-PROD:
+     needs: Database-Deploy-UAT
+     environment: PROD
+     name: Database Deployment PROD
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "        
+
+  Database-Deploy-DR:
+     needs: Database-Deploy-PROD
+     environment: DR
+     name: Database Deployment DR
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "           
