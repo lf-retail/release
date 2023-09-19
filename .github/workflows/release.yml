@@ -22,8 +22,8 @@ jobs:
 
   create-app-ci:
     if: ${{ github.event.inputs.app =='true' }}
-    environment: Dev
-    name: APP-CI
+    environment: DEV
+    name: App-CI
     runs-on: ubuntu-latest
     permissions:
         pull-requests: write
@@ -47,7 +47,7 @@ jobs:
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
   app-CI:
-    name: app-ci
+    name: App-ci
     needs: create-app-ci
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
@@ -61,7 +61,6 @@ jobs:
      needs: app-CI
      environment: DEV
      name: App Deployment DEV
-     if: ${{ github.event.inputs.app =='true' }}
      runs-on: ubuntu-latest
      steps:
       - name: Check out code
@@ -69,6 +68,42 @@ jobs:
       - name: deploy App
         run: |
          echo " runing App deployment now "      
+
+  app-deploy-UAT:
+     needs: app-deploy-dev
+     environment: UAT
+     name: App Deployment UAT
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "    
+
+  app-deploy-PROD:
+     needs: app-deploy-UAT
+     environment: PROD
+     name: App Deployment PROD
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "  
+
+  app-deploy-DR:
+     needs: app-deploy-PROD
+     environment: DR
+     name: App Deployment DR
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+         echo " runing App deployment now "           
       
   create-database-ci:
     if: ${{ github.event.inputs.database == 'true' }}
