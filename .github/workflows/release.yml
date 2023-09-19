@@ -57,7 +57,7 @@ jobs:
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
   app-deploy-dev:
-     needs: create-app-ci
+     needs: app-CI-dev
      environment: DEV
      name: App Deployment DEV
      if: ${{ github.event.inputs.app =='true' }}
