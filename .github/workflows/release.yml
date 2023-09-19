@@ -23,7 +23,7 @@ jobs:
   create-app-ci:
     if: ${{ github.event.inputs.app =='true' }}
     environment: Dev
-    name: APP CI DEV
+    name: APP-CI
     runs-on: ubuntu-latest
     permissions:
         pull-requests: write
@@ -46,7 +46,8 @@ jobs:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
-  app-CI-dev:
+  app-CI:
+    name: app-ci-build
     needs: create-app-ci
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
@@ -57,7 +58,7 @@ jobs:
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
   app-deploy-dev:
-     needs: app-CI-dev
+     needs: app-CI
      environment: DEV
      name: App Deployment DEV
      if: ${{ github.event.inputs.app =='true' }}
