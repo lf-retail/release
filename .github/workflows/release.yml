@@ -47,7 +47,7 @@ jobs:
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
   app-CI:
-    name: app-ci-build
+    name: app-ci
     needs: create-app-ci
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
     with:
