@@ -21,8 +21,9 @@ env:
 jobs:
 
   CI-BUILD-FOR-APP:
-    name: Application CI DEV
     if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: Application CI DEV
     runs-on: ubuntu-latest
     permissions:
         pull-requests: write
