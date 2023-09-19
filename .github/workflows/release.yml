@@ -52,5 +52,3 @@ jobs:
       env:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
-
-  
