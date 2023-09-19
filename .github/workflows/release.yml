@@ -1,5 +1,5 @@
 name: release
-run-name: release - ${{github.event.inputs.releaseNo}}
+run-name: release - ${{ github.event.inputs.releaseNo }}
 on:
   workflow_dispatch:
     inputs:
@@ -44,8 +44,8 @@ jobs:
       env:
         token: $GITHUB_TOKEN
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
-    - name: call-app-CI-reusable    
-      uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+    - name: Call reusable workflow
+      uses: lf-common-repo/shared-workflow/github/workflows/java-maven-sonar-ci.yml@main
       with:
         repoName: "lf-retail/app-service"
         branchName: $RELEASE_BRANCH_NAME
