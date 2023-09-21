@@ -15,7 +15,7 @@ on:
 
 env:
   Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
-  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+  #GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
 jobs:
 
@@ -35,14 +35,16 @@ jobs:
       with:
         repository: lf-retail/app-service
         ref: 'refs/heads/Dev' 
-        token: ${{ secrets.PAT_TOKEN }}
+        #token: ${{ secrets.PAT_TOKEN }}
+        token: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
     - name : Create Application Release Branch 
       run: |
         RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
         git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        token: $GITHUB_TOKEN
+        #token: $GITHUB_TOKEN
+        token: $Workflow2_PAT_TOKEN_GITHUB
         Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
   App-CI:
@@ -53,7 +55,8 @@ jobs:
       repoName: "lf-retail/app-service"
       branchName: $RELEASE_BRANCH_NAME
     secrets:
-      token: $GITHUB_TOKEN
+      #token: $GITHUB_TOKEN
+      token: $Workflow2_PAT_TOKEN_GITHUB
       Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
   App-Deploy-Dev:
