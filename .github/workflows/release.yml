@@ -14,7 +14,7 @@ on:
         description: Version Number
 
 env:
-  Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
+  #Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         token: $GITHUB_TOKEN
-        Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
+        #Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
 
   App-CI:
     name: App-ci
@@ -54,7 +54,7 @@ jobs:
       branchName: $RELEASE_BRANCH_NAME
     secrets:
       token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
+      #Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
       
   App-Deploy-Dev:
      needs: App-CI
