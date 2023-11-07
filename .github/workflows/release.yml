@@ -8,11 +8,9 @@ jobs:
     environment: Dev
     name: Database-CI
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
 
   Database-ci:
     needs: Create-database-CI
