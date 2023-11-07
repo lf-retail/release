@@ -1,113 +1,213 @@
-name: release
+name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
+
 on:
+  pull_request:
+    branches: [ "main" ]
+
   workflow_dispatch:
     inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-DB
+      Organization:
+        type: choice
+        description: Select an Organization
+        options:
+          - Rakbank-DEH-Onboarding
+        default: Rakbank-DEH-Onboarding
       app:
         type: boolean
         description: Deploy App
       database:
         type: boolean
         description: Deploy database
-      releaseNo:
-        type: text
-        description: Version Number
 
 jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.App =='true' }}
+    environment: main
+    name: APP-CI
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
 
-  create_release_branch:
+    - name: Checkout selected repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: main
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name: Create and push new branch
+      run: |
+        git checkout -b rel.${{ github.event.inputs.releaseVersion }}
+        git push origin rel.${{ github.event.inputs.releaseVersion }}
+
+    - name: Checkout the new branch (rel.x.x.x)
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: rel.${{ github.event.inputs.releaseVersion }}
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+  Create-database-CI:
+    if: ${{ github.event.inputs.database =='true' }}
+    environment: main
+    name: Database-CI
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+
+    - name: Checkout selected repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: main
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name: Create and push new branch
+      run: |
+        git checkout -b rel.${{ github.event.inputs.releaseVersion }}
+        git push origin rel.${{ github.event.inputs.releaseVersion }}
+
+    - name: Checkout the new branch (rel.x.x.x)
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: rel.${{ github.event.inputs.releaseVersion }}
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+  App-CI:
+    name: App-ci
+    needs: Create-App-CI
+    uses: RakBank-DevOps-Innovators/shared-workflows/.github/workflows/database-ci.yml@main
+    secrets: inherit
+    with:
+      Organization: ${{ github.event.inputs.Organization }}
+      repoName: ${{ github.event.inputs.choice }}
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+
+      
+  App-Deploy-Dev:
+    needs: App-CI
+    environment: DEV
+    name: App Deployment DEV
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        ref: 'refs/heads/Dev'
-      
-    - name: Create Release Branch
-      run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
-        git checkout -b $RELEASE_BRANCH_NAME Release
-        git push --set-upstream origin Release
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-  app-CI-dev:
-     if: ${{ github.event.inputs.app =='true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-     secrets:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-
-  database-CI-dev:
-     if: ${{ github.event.inputs.database == 'true' }}
-     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-     secrets:
-          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      
-  
-  app-deploy-dev:
-     environment: DEV
-     name: App  Deoloyment Dev
-     if: ${{ github.event.inputs.app =='true' }}
-     runs-on: ubuntu-latest
-     steps:
       - name: Check out code
         uses: actions/checkout@v2
       - name: deploy App
         run: |
-         echo " runing App deployment now "
-  database-deploy-dev:
-     environment: DEV
-     name: Database  Deoloyment Dev
-     if: ${{ github.event.inputs.database == 'true' }}
+          echo " running App deployment now "
+
+  App-Deploy-UAT:
+    needs: App-Deploy-Dev
+    environment: UAT
+    name: App Deployment UAT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+
+  App-Deploy-PROD:
+    needs: App-Deploy-UAT
+    environment: PROD
+    name: App Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+
+  App-deploy-DR:
+    needs: App-Deploy-PROD
+    environment: DR
+    name: App Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+
+  Database-ci:
+    needs: Create-database-CI
+    uses: RakBank-DevOps-Innovators/shared-workflows/.github/workflows/database-ci.yml@main
+    secrets: inherit
+    with:
+      Organization: ${{ github.event.inputs.Organization }}
+      repoName: ${{ github.event.inputs.choice }}
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+
+  Database-Deploy-DEV:
+    needs: Database-ci
+    uses: RakBank-DevOps-Innovators/shared-workflows/.github/workflows/database-cd.yml@main
+    secrets: inherit
+    with:
+      Organization: ${{ github.event.inputs.Organization }}
+      repoName: ${{ github.event.inputs.choice }}
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+
+  Database-Deploy-UAT:
+     needs: Database-Deploy-DEV
+     environment: UAT
+     name: Database Deployment UAT
      runs-on: ubuntu-latest
      steps:
       - name: Check out code
         uses: actions/checkout@v2
       - name: deploy database
         run: |
-         echo " runing database deployment now "
-  app-deploy-uat:
-     environment: UAT
-     name: App  Deoloyment UAT
-     if: ${{ github.event.inputs.app =='true' }}
-     runs-on: ubuntu-latest
-     needs: app-deploy-dev
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "
-  database-deploy-uat:
-     environment: UAT
-     name: Database  Deoloyment UAT
-     if: ${{ github.event.inputs.database == 'true' }}
-     runs-on: ubuntu-latest
-     needs: database-deploy-dev
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "
-  app-deploy-PROD:
+         echo " runing database deployment now "    
+
+  Database-Deploy-PROD:
+     needs: Database-Deploy-UAT
      environment: PROD
-     name: App  Deoloyment PROD
-     if: ${{ github.event.inputs.app =='true' }}
+     name: Database Deployment PROD
      runs-on: ubuntu-latest
-     needs: app-deploy-uat
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "
-  database-deploy-PROD:
-     environment: PROD
-     name: Database  Deoloyment PROD
-     if: ${{ github.event.inputs.database == 'true' }}
-     runs-on: ubuntu-latest
-     needs: database-deploy-uat
      steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -120,6 +220,16 @@ jobs:
           echo " runing database deployment now "
           env:
             DB_PASSWORD: ${{ env.DB_PASSWORD }}
+     
 
-
-          
+  Database-Deploy-DR:
+     needs: Database-Deploy-PROD
+     environment: DR
+     name: Database Deployment DR
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy database
+        run: |
+         echo " runing database deployment now "         
