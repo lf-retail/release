@@ -115,9 +115,11 @@ jobs:
         run: |
           echo "Please enter the PRODUCTION database password: "
           read -s DB_PASSWORD
+          echo "::set-env name=DB_PASSWORD::$DB_PASSWORD"
+          shell: bash
           echo " runing database deployment now "
+          env:
+            DB_PASSWORD: ${{ env.DB_PASSWORD }}
 
-          Run echo "Please enter the PRODUCTION database password: "
-Please enter the PRODUCTION database password: 
-Error: Process completed with exit code 1.
+
           
