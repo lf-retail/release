@@ -1,8 +1,8 @@
 name: Release Pipeline
 
 on:
- workflow_dispatch:
-   
+  workflow_dispatch:
+
 jobs:
   Create-database-CI:
     environment: Dev
@@ -19,61 +19,62 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Deploy database
         run: |
-         echo " runing database deployment now "
+          echo "Running database deployment now"
 
   Database-Deploy-DEV:
     needs: Database-ci
-    environment:  DEV
+    environment: DEV
     name: Database Deployment DEV
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Deploy database
         run: |
-         echo " runing database deployment now "
-         
+          echo "Running database deployment now"
+
   Database-Deploy-UAT:
-     needs: Database-Deploy-DEV
-     environment: UAT
-     name: Database Deployment UAT
-     runs-on: ubuntu-latest
-     steps:
+    needs: Database-Deploy-DEV
+    environment: UAT
+    name: Database Deployment UAT
+    runs-on: ubuntu-latest
+    steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Deploy database
         run: |
-         echo " runing database deployment now "    
+          echo "Running database deployment now"
 
   Database-Deploy-PROD:
-     needs: Database-Deploy-UAT
-     environment: PROD
-     name: Database Deployment PROD
-     runs-on: ubuntu-latest
-     steps:
+    needs: Database-Deploy-UAT
+    environment: PROD
+    name: Database Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Prompt for DB password
         run: |
           echo "Please enter the PRODUCTION database password: "
           read -s DB_PASSWORD
           echo "::set-env name=DB_PASSWORD::$DB_PASSWORD"
-          shell: bash
-          echo " runing database deployment now "
-          env:
-            DB_PASSWORD: ${{ env.DB_PASSWORD }}
-     
+        shell: bash
+      - name: Deploy database
+        run: |
+          echo "Running database deployment now"
+        env:
+          DB_PASSWORD: ${{ env.DB_PASSWORD }}
 
   Database-Deploy-DR:
-     needs: Database-Deploy-PROD
-     environment: DR
-     name: Database Deployment DR
-     runs-on: ubuntu-latest
-     steps:
+    needs: Database-Deploy-PROD
+    environment: DR
+    name: Database Deployment DR
+    runs-on: ubuntu-latest
+    steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Deploy database
         run: |
-         echo " runing database deployment now "         
+          echo "Running database deployment now"
