@@ -116,4 +116,8 @@ jobs:
           echo "Please enter the PRODUCTION database password: "
           read -s DB_PASSWORD
           echo " runing database deployment now "
+
+          Run echo "Please enter the PRODUCTION database password: "
+Please enter the PRODUCTION database password: 
+Error: Process completed with exit code 1.
           
