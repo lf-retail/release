@@ -113,5 +113,7 @@ jobs:
         uses: actions/checkout@v2
       - name: deploy database
         run: |
-         echo " runing database deployment now "
+          echo "Please enter the PRODUCTION database password: "
+          read -s DB_PASSWORD
+          echo " runing database deployment now "
           
