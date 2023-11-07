@@ -1,112 +1,10 @@
-name: release
-run-name: release - ${{github.event.inputs.releaseNo}}
+name: Release Pipeline
+
 on:
   workflow_dispatch:
-    inputs:
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database
-      releaseNo:
-        type: string
-        description: Version Number
-
-env:
-  #Workflow2_PAT_TOKEN_GITHUB: "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"  
-  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
 jobs:
-
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: App-CI
-    runs-on: ubuntu-latest
-    permissions:
-        pull-requests: write
-        issues: write
-        repository-projects: write
-    
-    steps:
-    - name: Checkout App Code
-      uses: actions/checkout@v3
-      with:
-        repository: lf-retail/app-service
-        ref: 'refs/heads/Dev' 
-        token: ${{ secrets.PAT_TOKEN }}
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
-        #Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB
-
-  App-CI:
-    name: App-ci
-    needs: Create-App-CI
-    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    with:
-      repoName: "lf-retail/app-service"
-      branchName: $RELEASE_BRANCH_NAME
-    secrets:
-      token: $GITHUB_TOKEN
-      #Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB 
-      
-  App-Deploy-Dev:
-     needs: App-CI
-     environment: DEV
-     name: App Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "      
-
-  App-Deploy-UAT:
-     needs: App-Deploy-Dev
-     environment: UAT
-     name: App Deployment UAT
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "    
-
-  App-Deploy-PROD:
-     needs: App-Deploy-UAT
-     environment: PROD
-     name: App Deployment PROD
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "  
-
-  app-deploy-DR:
-     needs: App-Deploy-PROD
-     environment: DR
-     name: App Deployment DR
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "           
-      
-  
-  Create-Database-CI:
-    if: ${{ github.event.inputs.database == 'true' }}
+  Create-database-CI:
     environment: Dev
     name: Database-CI
     runs-on: ubuntu-latest
@@ -114,81 +12,20 @@ jobs:
         pull-requests: write
         issues: write
         repository-projects: write
-    
     steps:
-    - name: Checkout App Code
-      uses: actions/checkout@v3
-      with:
-        repository: lf-retail/database
-        ref: 'refs/heads/Dev' 
-        token: ${{ secrets.PAT_TOKEN }}
-    - name : Create Database Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseNo }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
-        Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB      
-  
-  Database-ci:
-    
-    needs: Create-Database-CI
-    uses: lf-common-repo/shared-workflow/.github/workflows/database-ci.yml@main
-    with:
-      repoName: "lf-retail/database"
-      branchName: $RELEASE_BRANCH_NAME
-    secrets:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
-      token: $GITHUB_TOKEN
-      Workflow2_PAT_TOKEN_GITHUB: $Workflow2_PAT_TOKEN_GITHUB  
-
-
-  Database-Deploy-DEV:
-     needs: Database-ci
-     environment: DEV
-     name: Database Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "
-
-  Database-Deploy-UAT:
-     needs: Database-Deploy-DEV
-     environment: UAT
-     name: Database Deployment UAT
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "    
 
   Database-Deploy-PROD:
-     needs: Database-Deploy-UAT
-     environment: PROD
-     name: Database Deployment PROD
-     runs-on: ubuntu-latest
-     steps:
+    name: Database Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: deploy database
+      - name: Prompt for DB password
         run: |
-         echo " runing database deployment now "        
-
-  Database-Deploy-DR:
-     needs: Database-Deploy-PROD
-     environment: DR
-     name: Database Deployment DR
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "           
+          echo "Please enter the PRODUCTION database password: "
+          read -r DB_PASSWORD
+          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+          shell: bash
+        
