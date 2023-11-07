@@ -59,8 +59,8 @@ jobs:
         run: |
           echo "Please enter the PRODUCTION database password: "
           read -s DB_PASSWORD
-          echo "::set-env name=DB_PASSWORD::$DB_PASSWORD"
-        shell: bash
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> $GITHUB_ENV
+        
       - name: Deploy database
         run: |
           echo "Running database deployment now"
