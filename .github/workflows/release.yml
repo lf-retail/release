@@ -62,6 +62,9 @@ jobs:
       - name: Prompt for DB password
         run: |
           echo "Please enter the PRODUCTION database password: "
+          read -r DB_PASSWORD
+          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+          shell: bash
         
       - name: Deploy database
         run: |
