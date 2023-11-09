@@ -55,14 +55,12 @@ jobs:
     needs: Database-Deploy-UAT
     runs-on: ubuntu-latest
     steps:
-      - name: Request user input
-        id: input
-        uses: actions/github-script@v6
+      - name: Create Comment for User Input
+        uses: actions/github-script@v5
         with:
           script: |
-            const response = await github.input('Do you want to deploy to PRODUCTION?', 'No', 'Yes');
-            core.setOutput('deployToProd', response === 'Yes' ? 'true' : 'false')
-
+            const issueComment = `@${github.context.actor} Do you want to deploy to PRODUCTION? (Reply with 'Yes' or 'No')`;
+            github.issues.createComment({ issue_number: github.context.issue.number, owner: github.context.repo.owner, repo: github.context.repo.repo, body: issueComment });
  
   Database-Deploy-PROD:
     needs: User-Input-Prod
