@@ -51,26 +51,31 @@ jobs:
         run: |
           echo "Running database deployment now"
 
-  Database-Deploy-PROD:
+  User-Input-Prod:
     needs: Database-Deploy-UAT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request user input
+        id: input
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.input('Do you want to deploy to PRODUCTION?', 'No', 'Yes');
+            core.setOutput('deployToProd', response === 'Yes' ? 'true' : 'false')
+
+ 
+  Database-Deploy-PROD:
+    needs: User-Input-Prod
     environment: PROD
     name: Database Deployment PROD
     runs-on: ubuntu-latest
+    if: ${{ needs.User-Input-Prod.outputs.deployToProd == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      - name: Prompt for DB password
+      - name: deploy database
         run: |
-          echo "Please enter the PRODUCTION database password: "
-          read -r DB_PASSWORD
-          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
-          shell: bash
-        
-      - name: Deploy database
-        run: |
-          echo "Running database deployment now"
-        env:
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          echo "Running database deployment to PRODUCTION now"
 
 
   Database-Deploy-DR:
