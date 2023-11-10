@@ -51,39 +51,20 @@ jobs:
         run: |
           echo "Running database deployment now"
 
-  User-Input-Prod:
-    needs: Database-Deploy-UAT
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Comment for User Input
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const issueComment = `@${github.context.actor} Do you want to deploy to PRODUCTION? (Reply with 'Yes' or 'No')`;
-            github.issues.createComment({ issue_number: github.context.issue.number, owner: github.context.repo.owner, repo: github.context.repo.repo, body: issueComment });
- 
-  Database-Deploy-PROD:
-    needs: User-Input-Prod
-    environment: PROD
-    name: Database Deployment PROD
-    runs-on: ubuntu-latest
-    if: ${{ needs.User-Input-Prod.outputs.deployToProd == 'true' }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
+      - name: Check for rejection
+        id: check-rejection
         run: |
-          echo "Running database deployment to PRODUCTION now"
+          # Your logic to check if the deployment is rejected
+          # Set a custom environment variable if rejected
+          if [ $DEPLOYMENT_REJECTED == "true" ]; then
+            echo "Deployment to UAT rejected, set the rejection flag."
+            echo "rejection=true" >> $GITHUB_ENV
+          fi
+        env:
+          DEPLOYMENT_REJECTED: ${{ env.DEPLOYMENT_REJECTED }}
 
-
-  Database-Deploy-DR:
-    needs: Database-Deploy-PROD
-    environment: DR
-    name: Database Deployment DR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Deploy database
+      - name: Rollback on Rejection
+        if: env.REJECTION == 'true'
         run: |
-          echo "Running database deployment now"
+          echo "Deployment to UAT rejected, initiating rollback..."
+          ./rollback.sh
