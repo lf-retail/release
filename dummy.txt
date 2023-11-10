@@ -1,10 +1,10 @@
-  - hosts: '{{ target }}'
-    become: yes
-    become_method: sudo
-    gather_facts: no
-    tasks:
-      - name: ssh  to deploying the server
-        become_user: root
-        shell: 
+- hosts: '{{ target }}'
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Deploy Application
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
     #roles:
      # - IBPS-deployment
