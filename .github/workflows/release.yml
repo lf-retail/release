@@ -58,7 +58,7 @@ jobs:
           # Set a custom environment variable if rejected
           if [ $DEPLOYMENT_REJECTED == "true" ]; then
             echo "Deployment to UAT rejected, set the rejection flag."
-            echo "rejection=true" >> $GITHUB_ENV
+            echo "REJECTION=true" >> $GITHUB_ENV
           fi
         env:
           DEPLOYMENT_REJECTED: ${{ env.DEPLOYMENT_REJECTED }}
