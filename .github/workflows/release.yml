@@ -56,15 +56,15 @@ jobs:
         run: |
           # Your logic to check if the deployment is rejected
           # Set a custom environment variable if rejected
-          if [ $DEPLOYMENT_REJECTED == "true" ]; then
+          if [ $DEPLOYMENT_REJECT == "true" ]; then
             echo "Deployment to UAT rejected, set the rejection flag."
-            echo "REJECTION=true" >> $GITHUB_ENV
+            echo "REJECT=true" >> $GITHUB_ENV
           fi
         env:
-          DEPLOYMENT_REJECTED: ${{ env.DEPLOYMENT_REJECTED }}
+          DEPLOYMENT_REJECT: ${{ env.DEPLOYMENT_REJECT }}
 
       - name: Rollback on Rejection
-        if: env.REJECTION == 'true'
+        if: env.REJECT == 'true'
         run: |
           echo "Deployment to UAT rejected, initiating rollback..."
           ./rollback.sh
