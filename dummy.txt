@@ -5,6 +5,14 @@
   tasks:
     - name: Deploy Application
       become_user: root
-      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+      shell: "/bin/bash -c 'cd {{ target_location }} && ./deploy.sh'"
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ target_location }} && ./rollback.sh change.log'"
+      when: deploy_result|failed
+
     #roles:
      # - IBPS-deployment
