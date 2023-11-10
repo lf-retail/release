@@ -1,1 +1,10 @@
-
+  - hosts: '{{ target }}'
+    become: yes
+    become_method: sudo
+    gather_facts: no
+    tasks:
+      - name: ssh  to deploying the server
+        become_user: root
+        shell: 
+    #roles:
+     # - IBPS-deployment
