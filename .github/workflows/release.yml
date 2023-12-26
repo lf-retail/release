@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v2
       - name: deploy App
         run: |
-         echo " runing App deployment now "      
+         uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main     
 
   App-Deploy-UAT:
      needs: App-Deploy-Dev
