@@ -1,0 +1,209 @@
+name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - rakbank-internal/RetailOnboarding-DB         
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database       
+env:  
+  GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        
+jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
+
+  App-CI:
+    name: App-CI
+    needs: Create-App-CI
+    uses: rakbank-internal/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+      
+  App-Deploy-Dev:
+    needs: App-CI
+    environment: DEV
+    name: App Deployment DEV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  App-Deploy-UAT:
+    needs: App-Deploy-Dev
+    environment: UAT
+    name: App Deployment UAT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+           echo " running App deployment now "
+  App-Deploy-PROD:
+    needs: App-Deploy-UAT
+    environment: PROD
+    name: App Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  App-deploy-DR:
+    needs: App-Deploy-PROD
+    environment: DR
+    name: App Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+
+  Create-Database-CI:
+    if: ${{ github.event.inputs.database =='true' }}
+    environment: DEV
+    name: Database-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ secrets.TOKEN_GITHUB }}
+
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN         
+      
+
+  Database-CI:
+    name: Database-CI
+    needs: Create-Database-CI
+    uses: rakbank-internal/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  Database-Deploy-Dev:
+    needs: Database-CI
+    uses: rakbank-internal/RetailOnboarding-DB/.github/workflows/main.yml@dev
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: DEV
+      branchName: $RELEASE_BRANCH_NAME
+      version: ${{github.event.inputs.releaseVersion}}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      ORAC_USERNAME: ${{ secrets.ORAC_USERNAME }}
+      ORAC_PASSWORD: ${{ secrets.ORAC_PASSWORD }}
+    
+  Database-Deploy-UAT:
+    needs: Database-Deploy-Dev
+    uses: rakbank-internal/RetailOnboarding-DB/.github/workflows/main.yml@dev
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: UAT
+      branchName: $RELEASE_BRANCH_NAME
+      version: ${{github.event.inputs.releaseVersion}}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      ORAC_USERNAME: ${{ secrets.ORAC_USERNAME }}
+      ORAC_PASSWORD: ${{ secrets.ORAC_PASSWORD }}
+
+  Database-Deploy-PROD:
+    needs: Database-Deploy-UAT
+    environment: PROD
+    name: Database Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  Datbase-deploy-DR:
+    needs: Database-Deploy-PROD
+    environment: DR
+    name: Database Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
